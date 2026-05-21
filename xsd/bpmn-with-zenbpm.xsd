@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Wrapper schema for XSD validation of BPMN 2.0 files that use the zenbpm extension namespace.
+
+  This file is NOT the zenbpm extension schema itself — see zenbpm.xsd for that.
+  Its sole purpose is to pull all required namespace schemas into a single
+  entry point that Java's SchemaFactory.newSchema() can consume.
+
+  When xsd-schema-validator (or any Java-based XSD tool) is pointed at this
+  file it loads:
+    • BPMN 2.0 core  (BPMN20.xsd → Semantic.xsd + BPMNDI.xsd → DC.xsd / DI.xsd)
+    • zenbpm extension (zenbpm.xsd)
+
+  Because Semantic.xsd defines extensionElements as:
+      <xsd:any namespace="##other" processContents="lax" …/>
+  the validator will resolve and validate zenbpm:* children of extensionElements
+  against zenbpm.xsd once that schema is known.
+-->
+<xs:schema
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- BPMN 2.0 core (declares bpmn:definitions, all tasks, events, …) -->
+  <xs:import
+    namespace  ="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    schemaLocation="BPMN20.xsd"/>
+
+  <!-- BPMN DI (BPMNDiagram, BPMNShape, BPMNEdge, …) -->
+  <xs:import
+    namespace  ="http://www.omg.org/spec/BPMN/20100524/DI"
+    schemaLocation="BPMNDI.xsd"/>
+
+  <!-- Draw-Coordinates (DC) and Draw-Interface (DI) support schemas -->
+  <xs:import
+    namespace  ="http://www.omg.org/spec/DD/20100524/DC"
+    schemaLocation="DC.xsd"/>
+
+  <xs:import
+    namespace  ="http://www.omg.org/spec/DD/20100524/DI"
+    schemaLocation="DI.xsd"/>
+
+  <!-- zenbpm extension namespace (all zenbpm:* extension elements) -->
+  <xs:import
+    namespace  ="http://example.org/schema/zenbpm/1.0"
+    schemaLocation="zenbpm.xsd"/>
+
+</xs:schema>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Example BPMN 2.0 process using the zenbpm extension namespace.
+
+  Namespace declaration required on bpmn:Definitions:
+    xmlns:zenbpm="http://example.org/schema/zenbpm/1.0"
+
+  Schema location (optional, enables IDE validation):
+    xsi:schemaLocation="http://example.org/schema/zenbpm/1.0
+                        https://example.org/schema/zenbpm/1.0/zenbpm.xsd"
+-->
+<bpmn:definitions
+  xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:zenbpm="http://example.org/schema/zenbpm/1.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://example.org/schema/zenbpm/1.0
+                      ../xsd/zenbpm.xsd"
+  targetNamespace="http://example.org/bpmn"
+  id="Definitions_example">
+
+  <!-- ============================================================
+       Process: shows most zenbpm extension elements
+  ============================================================ -->
+  <bpmn:process id="Process_example" isExecutable="true">
+
+    <!-- Process-level extensions: embedded form + version tag -->
+    <bpmn:extensionElements>
+      <zenbpm:versionTag value="1.2.0"/>
+      <zenbpm:userTaskForm id="Form_orderDetails">
+        {"components":[{"key":"orderId","label":"Order ID","type":"textfield"}]}
+      </zenbpm:userTaskForm>
+      <zenbpm:properties>
+        <zenbpm:property name="owner"   value="payments-team"/>
+        <zenbpm:property name="domain"  value="commerce"/>
+      </zenbpm:properties>
+      <zenbpm:executionListeners>
+        <zenbpm:executionListener eventType="start" type="process-audit-listener" retries="3"/>
+      </zenbpm:executionListeners>
+    </bpmn:extensionElements>
+
+    <bpmn:startEvent id="StartEvent_1"/>
+
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Task_validate"/>
+
+    <!-- ── Service Task: taskDefinition + ioMapping + taskHeaders ── -->
+    <bpmn:serviceTask id="Task_validate" name="Validate Order">
+      <bpmn:extensionElements>
+        <zenbpm:taskDefinition type="order-validation-worker" retries="3"/>
+        <zenbpm:ioMapping>
+          <zenbpm:input  source="=orderId"   target="inputOrderId"/>
+          <zenbpm:input  source="=customerId" target="inputCustomerId"/>
+          <zenbpm:output source="=validationResult" target="isValid"/>
+        </zenbpm:ioMapping>
+        <zenbpm:taskHeaders>
+          <zenbpm:header key="endpoint"    value="https://api.example.org/validate"/>
+          <zenbpm:header key="contentType" value="application/json"/>
+        </zenbpm:taskHeaders>
+        <zenbpm:executionListeners>
+          <zenbpm:executionListener eventType="start" type="task-pre-hook"  retries="1"/>
+          <zenbpm:executionListener eventType="end"   type="task-post-hook" retries="1">
+            <zenbpm:taskHeaders>
+              <zenbpm:header key="phase" value="post"/>
+            </zenbpm:taskHeaders>
+          </zenbpm:executionListener>
+        </zenbpm:executionListeners>
+        <zenbpm:linkedResources>
+          <zenbpm:linkedResource
+            resourceId="openapi-spec-001"
+            resourceType="openapi"
+            linkName="validationApi"
+            bindingType="versionTag"
+            versionTag="stable"/>
+        </zenbpm:linkedResources>
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
+
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_validate" targetRef="Task_userReview"/>
+
+    <!-- ── User Task: assignment + form + schedule + priority + listeners ── -->
+    <bpmn:userTask id="Task_userReview" name="Review Order">
+      <bpmn:extensionElements>
+        <zenbpm:userTask/>
+        <zenbpm:formDefinition formId="Form_orderDetails" bindingType="latest"/>
+        <zenbpm:assignmentDefinition
+          assignee="=currentUser"
+          candidateGroups="approvers,managers"
+          candidateUsers="alice,bob"/>
+        <zenbpm:priorityDefinition priority="75"/>
+        <zenbpm:taskSchedule
+          dueDate      ="=now() + duration(&quot;P2D&quot;)"
+          followUpDate ="=now() + duration(&quot;P1D&quot;)"/>
+        <zenbpm:ioMapping>
+          <zenbpm:input  source="=orderId"       target="reviewOrderId"/>
+          <zenbpm:output source="=approvalStatus" target="approved"/>
+        </zenbpm:ioMapping>
+        <zenbpm:taskListeners>
+          <zenbpm:taskListener eventType="assignment" type="assignment-notifier" retries="2"/>
+          <zenbpm:taskListener eventType="complete"   type="completion-auditor"  retries="1"/>
+        </zenbpm:taskListeners>
+      </bpmn:extensionElements>
+    </bpmn:userTask>
+
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="Task_userReview" targetRef="Task_callSubProcess"/>
+
+    <!-- ── Call Activity: calledElement with propagation rules ── -->
+    <bpmn:callActivity id="Task_callSubProcess" name="Run Fulfillment">
+      <bpmn:extensionElements>
+        <zenbpm:calledElement
+          processId                  ="fulfillment-process"
+          propagateAllChildVariables ="true"
+          propagateAllParentVariables="true"
+          bindingType                ="versionTag"
+          versionTag                 ="v2"/>
+        <zenbpm:ioMapping>
+          <zenbpm:input  source="=orderId"      target="fulfillmentOrderId"/>
+          <zenbpm:output source="=trackingCode" target="shipmentTracking"/>
+        </zenbpm:ioMapping>
+      </bpmn:extensionElements>
+    </bpmn:callActivity>
+
+    <bpmn:sequenceFlow id="Flow_4" sourceRef="Task_callSubProcess" targetRef="Task_ruleDmn"/>
+
+    <!-- ── Business Rule Task: DMN decision ── -->
+    <bpmn:businessRuleTask id="Task_ruleDmn" name="Determine Discount">
+      <bpmn:extensionElements>
+        <zenbpm:calledDecision
+          decisionId    ="discount-rules"
+          resultVariable="discountRate"
+          bindingType   ="latest"/>
+        <zenbpm:ioMapping>
+          <zenbpm:input source="=customerTier" target="tier"/>
+          <zenbpm:input source="=orderTotal"   target="total"/>
+        </zenbpm:ioMapping>
+      </bpmn:extensionElements>
+    </bpmn:businessRuleTask>
+
+    <bpmn:sequenceFlow id="Flow_5" sourceRef="Task_ruleDmn" targetRef="Task_scriptCalc"/>
+
+    <!-- ── Script Task: inline FEEL expression ── -->
+    <bpmn:scriptTask id="Task_scriptCalc" name="Calculate Final Price">
+      <bpmn:extensionElements>
+        <zenbpm:script
+          expression    ="=orderTotal * (1 - discountRate)"
+          resultVariable="finalPrice"/>
+      </bpmn:extensionElements>
+    </bpmn:scriptTask>
+
+    <bpmn:sequenceFlow id="Flow_6" sourceRef="Task_scriptCalc" targetRef="EndEvent_1"/>
+
+    <bpmn:endEvent id="EndEvent_1"/>
+
+  </bpmn:process>
+
+  <!-- ============================================================
+       Message: receive-task subscription example (separate process)
+  ============================================================ -->
+  <bpmn:process id="Process_messageExample" isExecutable="true">
+
+    <bpmn:startEvent id="StartEvent_msg"/>
+    <bpmn:sequenceFlow id="Flow_msg1" sourceRef="StartEvent_msg" targetRef="Task_receive"/>
+
+    <!-- ── Receive Task: message subscription with correlationKey ── -->
+    <bpmn:receiveTask id="Task_receive" name="Wait for Payment Confirmation"
+                      messageRef="Message_paymentConfirmed">
+      <bpmn:extensionElements>
+        <zenbpm:subscription correlationKey="=orderId"/>
+        <zenbpm:ioMapping>
+          <zenbpm:output source="=paymentId" target="confirmedPaymentId"/>
+        </zenbpm:ioMapping>
+      </bpmn:extensionElements>
+    </bpmn:receiveTask>
+
+    <bpmn:sequenceFlow id="Flow_msg2" sourceRef="Task_receive" targetRef="EndEvent_msg"/>
+    <bpmn:endEvent id="EndEvent_msg"/>
+
+  </bpmn:process>
+
+  <bpmn:message id="Message_paymentConfirmed" name="paymentConfirmed"/>
+
+</bpmn:definitions>

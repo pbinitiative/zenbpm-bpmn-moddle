@@ -1,0 +1,624 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  BPMN Extension Schema — zenbpm namespace
+  URI:    http://example.org/schema/zenbpm/1.0
+  Prefix: zenbpm
+
+  This XSD is the authoritative machine-readable specification of the
+  zenbpm BPMN 2.0 extension namespace.  It is used by:
+    - XML validators (e.g. xsd-schema-validator in the test suite)
+    - IDEs for auto-complete inside .bpmn files
+    - Any tool that needs to verify extension-element content
+
+  Derive from Zeebe's extension schema (http://camunda.org/schema/zeebe/1.0)
+  but fully independent: no runtime dependency on Camunda/Zeebe.
+-->
+<xs:schema
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:zenbpm="http://example.org/schema/zenbpm/1.0"
+  targetNamespace="http://example.org/schema/zenbpm/1.0"
+  elementFormDefault="qualified"
+  attributeFormDefault="unqualified">
+
+  <!-- ================================================================
+       0.  DOCUMENTATION CONVENTIONS
+       Every complex type has an xs:annotation/xs:documentation block
+       describing which BPMN 2.0 element it may appear inside (the
+       "allowedIn" constraint that moddle enforces at runtime).
+  ================================================================ -->
+
+  <!-- ================================================================
+       1.  ABSTRACT / SHARED BASE TYPES
+  ================================================================ -->
+
+  <!--
+    InputOutputParameter
+    Base type for Input and Output variable-mapping elements.
+    Never used directly in XML; always instantiated as zenbpm:input or zenbpm:output.
+  -->
+  <xs:complexType name="tInputOutputParameter">
+    <xs:annotation>
+      <xs:documentation>
+        Abstract base for input/output variable-mapping entries.
+        Concrete elements: zenbpm:input, zenbpm:output.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="source" type="xs:string" use="optional"/>
+    <xs:attribute name="target" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <!-- ================================================================
+       2.  TASK / SERVICE TASK EXTENSIONS
+  ================================================================ -->
+
+  <!--
+    taskDefinition  (allowedIn: zenbpm:ServiceTask → effectively bpmn:ServiceTask etc.)
+    Declares the job type and retry count for a service-task worker.
+  -->
+  <xs:element name="taskDefinition">
+    <xs:annotation>
+      <xs:documentation>
+        Defines the job type and retry policy for a service task.
+        Allowed inside extension elements of:
+          bpmn:ServiceTask, bpmn:BusinessRuleTask, bpmn:ScriptTask,
+          bpmn:SendTask, bpmn:EndEvent, bpmn:IntermediateThrowEvent,
+          bpmn:AdHocSubProcess.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="type"    type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>Job type string, e.g. "payment-service".</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="retries" type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>Number of retries (expression or literal integer as string).</xs:documentation></xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!--
+    taskHeaders  (allowedIn: service tasks, executionListener)
+    A collection of static key/value headers passed to the job worker.
+  -->
+  <xs:element name="taskHeaders">
+    <xs:annotation>
+      <xs:documentation>
+        Container for static header entries passed to the job worker.
+        Allowed inside extension elements of service tasks and execution listeners.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="header" type="zenbpm:tHeader" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="tHeader">
+    <xs:annotation>
+      <xs:documentation>A single key/value header entry.</xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="id"    type="xs:string" use="optional"/>
+    <xs:attribute name="key"   type="xs:string" use="optional"/>
+    <xs:attribute name="value" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <!-- ================================================================
+       3.  INPUT / OUTPUT MAPPING
+  ================================================================ -->
+
+  <!--
+    ioMapping  (allowedIn: CallActivity, Event, ReceiveTask, service tasks, SubProcess, UserTask)
+    Container for input and output variable-mapping entries.
+  -->
+  <xs:element name="ioMapping">
+    <xs:annotation>
+      <xs:documentation>
+        Container for input and output variable-mapping rules.
+        Allowed inside extension elements of:
+          bpmn:CallActivity, bpmn:Event, bpmn:ReceiveTask,
+          service-task-like elements, bpmn:SubProcess, bpmn:UserTask.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="input"  type="zenbpm:tInputOutputParameter"
+                    minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="output" type="zenbpm:tInputOutputParameter"
+                    minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ================================================================
+       4.  SUBSCRIPTION
+  ================================================================ -->
+
+  <!--
+    subscription  (allowedIn: bpmn:ReceiveTask, message catch events)
+    Defines the correlation key expression for a message subscription.
+  -->
+  <xs:element name="subscription">
+    <xs:annotation>
+      <xs:documentation>
+        Defines the correlation key for a message-based subscription.
+        Allowed inside extension elements of bpmn:ReceiveTask and
+        message catch/boundary events.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="correlationKey" type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>FEEL expression for the correlation key, e.g. "=orderId".</xs:documentation></xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ================================================================
+       5.  LOOP CHARACTERISTICS (multi-instance)
+  ================================================================ -->
+
+  <!--
+    loopCharacteristics  (allowedIn: bpmn:MultiInstanceLoopCharacteristics)
+    Variable collection expressions for multi-instance loops.
+  -->
+  <xs:element name="loopCharacteristics">
+    <xs:annotation>
+      <xs:documentation>
+        Variable-mapping for multi-instance activities.
+        Allowed inside extension elements of bpmn:MultiInstanceLoopCharacteristics.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="inputCollection"  type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>FEEL expression that evaluates to the list of items to iterate over.</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="inputElement"     type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>Variable name bound to each element of inputCollection.</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="outputCollection" type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>Variable name for the output collection gathered from each instance.</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="outputElement"    type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>Variable name inside each instance that is collected into outputCollection.</xs:documentation></xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ================================================================
+       6.  CALL ACTIVITY
+  ================================================================ -->
+
+  <!--
+    calledElement  (allowedIn: bpmn:CallActivity)
+    Specifies which process to invoke and variable propagation rules.
+  -->
+  <xs:element name="calledElement">
+    <xs:annotation>
+      <xs:documentation>
+        Configures the called process and variable-propagation policy for a call activity.
+        Allowed inside extension elements of bpmn:CallActivity.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="processId"                   type="xs:string"  use="optional">
+        <xs:annotation><xs:documentation>Static process ID of the called process.</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="processIdExpression"         type="xs:string"  use="optional">
+        <xs:annotation><xs:documentation>FEEL expression that evaluates to the called process ID.</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="propagateAllChildVariables"  type="xs:boolean" use="optional">
+        <xs:annotation><xs:documentation>If true, all child-process variables are propagated back to the parent on completion.</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="propagateAllParentVariables" type="xs:boolean" use="optional" default="true">
+        <xs:annotation><xs:documentation>If true (default), all parent-process variables are available in the called process.</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="bindingType" type="xs:string" use="optional" default="latest">
+        <xs:annotation><xs:documentation>Version binding strategy: "latest", "deployment", or "versionTag".</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="versionTag"  type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>The version tag to bind to when bindingType="versionTag".</xs:documentation></xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ================================================================
+       7.  BUSINESS RULE TASK — DMN
+  ================================================================ -->
+
+  <!--
+    calledDecision  (allowedIn: bpmn:BusinessRuleTask)
+    Links a BusinessRuleTask to a DMN decision.
+  -->
+  <xs:element name="calledDecision">
+    <xs:annotation>
+      <xs:documentation>
+        Links a business-rule task to a DMN decision table.
+        Allowed inside extension elements of bpmn:BusinessRuleTask.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="decisionId"      type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>ID of the DMN decision to invoke.</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="resultVariable"  type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>Variable name where the DMN result is stored.</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="bindingType"     type="xs:string" use="optional" default="latest"/>
+      <xs:attribute name="versionTag"      type="xs:string" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ================================================================
+       8.  SCRIPT TASK
+  ================================================================ -->
+
+  <!--
+    script  (allowedIn: bpmn:ScriptTask)
+    Inline FEEL / Groovy / other script with result variable.
+  -->
+  <xs:element name="script">
+    <xs:annotation>
+      <xs:documentation>
+        Defines an inline script expression for a script task.
+        Allowed inside extension elements of bpmn:ScriptTask.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="expression"      type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>The script body or FEEL expression.</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="resultVariable"  type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>Variable where the script result is stored.</xs:documentation></xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ================================================================
+       9.  USER TASK
+  ================================================================ -->
+
+  <!--
+    userTask  (allowedIn: bpmn:UserTask)
+    Marker element — presence indicates the task is managed by the engine's
+    user-task lifecycle (Camunda 8 "Zeebe user task").
+  -->
+  <xs:element name="userTask">
+    <xs:annotation>
+      <xs:documentation>
+        Marker that opts the user task into engine-managed lifecycle.
+        Allowed inside extension elements of bpmn:UserTask.
+        No attributes — presence alone is significant.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType/>
+  </xs:element>
+
+  <!--
+    formDefinition  (allowedIn: bpmn:UserTask)
+    Links a user task to an embedded or external form.
+  -->
+  <xs:element name="formDefinition">
+    <xs:annotation>
+      <xs:documentation>
+        Associates a user task with a form.
+        Allowed inside extension elements of bpmn:UserTask.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="formKey"           type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>Key referencing an embedded form definition.</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="formId"            type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>ID of a form deployed separately.</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="externalReference" type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>URL or path to an externally hosted form.</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="bindingType"       type="xs:string" use="optional" default="latest"/>
+      <xs:attribute name="versionTag"        type="xs:string" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!--
+    userTaskForm  (allowedIn: bpmn:Process — inside the Process extensionElements)
+    Stores an embedded form definition (JSON schema body) inside the process.
+  -->
+  <xs:element name="userTaskForm">
+    <xs:annotation>
+      <xs:documentation>
+        Embeds a form definition (JSON body) inside the process.
+        Allowed inside extension elements of bpmn:Process.
+        The body is the raw form JSON stored as element text content.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attribute name="id" type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>Identifier referenced by zenbpm:formDefinition/@formKey.</xs:documentation></xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!--
+    assignmentDefinition  (allowedIn: bpmn:UserTask)
+    Declares assignee and candidate groups/users for a user task.
+  -->
+  <xs:element name="assignmentDefinition">
+    <xs:annotation>
+      <xs:documentation>
+        Defines assignment rules for a user task.
+        Allowed inside extension elements of bpmn:UserTask.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="assignee"         type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>FEEL expression or literal for the assignee.</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="candidateGroups"  type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>Comma-separated candidate group IDs or FEEL list expression.</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="candidateUsers"   type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>Comma-separated candidate user IDs or FEEL list expression.</xs:documentation></xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!--
+    priorityDefinition  (allowedIn: bpmn:UserTask)
+  -->
+  <xs:element name="priorityDefinition">
+    <xs:annotation>
+      <xs:documentation>
+        Sets the priority of a user task.
+        Allowed inside extension elements of bpmn:UserTask.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="priority" type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>Integer or FEEL expression (0–100).</xs:documentation></xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!--
+    taskSchedule  (allowedIn: bpmn:UserTask)
+    Due-date and follow-up-date configuration.
+  -->
+  <xs:element name="taskSchedule">
+    <xs:annotation>
+      <xs:documentation>
+        Configures the due date and follow-up date for a user task.
+        Allowed inside extension elements of bpmn:UserTask.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="dueDate"      type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>ISO-8601 datetime string or FEEL expression.</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="followUpDate" type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>ISO-8601 datetime string or FEEL expression.</xs:documentation></xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ================================================================
+       10.  TASK LISTENERS
+  ================================================================ -->
+
+  <!--
+    taskListeners  (allowedIn: bpmn:UserTask)
+    Container for task-lifecycle listener declarations.
+  -->
+  <xs:element name="taskListeners">
+    <xs:annotation>
+      <xs:documentation>
+        Container for task-lifecycle listeners.
+        Allowed inside extension elements of bpmn:UserTask.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="taskListener" type="zenbpm:tTaskListener"
+                    minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="tTaskListener">
+    <xs:annotation>
+      <xs:documentation>A single task-lifecycle listener entry.</xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="eventType" type="xs:string" use="optional">
+      <xs:annotation><xs:documentation>Lifecycle event: "create", "assignment", "update", "complete", "delete".</xs:documentation></xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="retries"   type="xs:string" use="optional"/>
+    <xs:attribute name="type"      type="xs:string" use="optional">
+      <xs:annotation><xs:documentation>Job type for the listener worker.</xs:documentation></xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <!-- ================================================================
+       11.  EXECUTION LISTENERS
+  ================================================================ -->
+
+  <!--
+    executionListeners  (allowedIn: Events, Activities, Process, Gateways)
+    Container for flow-execution listener declarations.
+  -->
+  <xs:element name="executionListeners">
+    <xs:annotation>
+      <xs:documentation>
+        Container for execution-lifecycle listeners.
+        Allowed inside extension elements of:
+          bpmn:Event, bpmn:Activity, bpmn:Process,
+          bpmn:ExclusiveGateway, bpmn:InclusiveGateway,
+          bpmn:ParallelGateway, bpmn:EventBasedGateway.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="executionListener" type="zenbpm:tExecutionListener"
+                    minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="tExecutionListener">
+    <xs:annotation>
+      <xs:documentation>A single execution-lifecycle listener entry.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <!-- listeners may carry their own task headers -->
+      <xs:element name="taskHeaders" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="header" type="zenbpm:tHeader" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="eventType" type="xs:string" use="optional">
+      <xs:annotation><xs:documentation>Lifecycle event: "start" or "end".</xs:documentation></xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="retries"   type="xs:string" use="optional"/>
+    <xs:attribute name="type"      type="xs:string" use="optional">
+      <xs:annotation><xs:documentation>Job type for the listener worker.</xs:documentation></xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <!-- ================================================================
+       12.  PROPERTIES (generic key-value)
+  ================================================================ -->
+
+  <!--
+    properties  (allowedIn: any element via extensionElements)
+    Arbitrary name/value metadata.
+  -->
+  <xs:element name="properties">
+    <xs:annotation>
+      <xs:documentation>
+        Container for arbitrary key/value extension properties.
+        May appear in extension elements of any BPMN element.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="property" type="zenbpm:tProperty"
+                    minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="tProperty">
+    <xs:attribute name="name"  type="xs:string" use="optional"/>
+    <xs:attribute name="value" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <!-- ================================================================
+       13.  VERSION TAG
+  ================================================================ -->
+
+  <!--
+    versionTag  (allowedIn: bpmn:Process)
+    Human-readable version tag for the process.
+  -->
+  <xs:element name="versionTag">
+    <xs:annotation>
+      <xs:documentation>
+        Attaches a human-readable version tag to a process definition.
+        Allowed inside extension elements of bpmn:Process.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="value" type="xs:string" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ================================================================
+       14.  LINKED RESOURCES
+  ================================================================ -->
+
+  <!--
+    linkedResources  (allowedIn: bpmn:ServiceTask)
+    Collection of external resource references.
+  -->
+  <xs:element name="linkedResources">
+    <xs:annotation>
+      <xs:documentation>
+        Container for external resource references attached to a service task.
+        Allowed inside extension elements of bpmn:ServiceTask.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="linkedResource" type="zenbpm:tLinkedResource"
+                    minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="tLinkedResource">
+    <xs:attribute name="resourceId"   type="xs:string" use="optional"/>
+    <xs:attribute name="resourceType" type="xs:string" use="optional"/>
+    <xs:attribute name="linkName"     type="xs:string" use="optional"/>
+    <xs:attribute name="bindingType"  type="xs:string" use="optional" default="latest"/>
+    <xs:attribute name="versionTag"   type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <!-- ================================================================
+       15.  AD-HOC SUB-PROCESS
+  ================================================================ -->
+
+  <!--
+    adHoc  (allowedIn: bpmn:AdHocSubProcess)
+    Runtime collection expressions for ad-hoc sub-processes.
+  -->
+  <xs:element name="adHoc">
+    <xs:annotation>
+      <xs:documentation>
+        Configures variable collection for an ad-hoc sub-process.
+        Allowed inside extension elements of bpmn:AdHocSubProcess.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="activeElementsCollection" type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>FEEL expression evaluating to the set of active elements.</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="outputCollection"         type="xs:string" use="optional"/>
+      <xs:attribute name="outputElement"            type="xs:string" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ================================================================
+       16.  CONDITIONAL FILTER
+  ================================================================ -->
+
+  <!--
+    conditionalFilter  (allowedIn: bpmn:ConditionalEventDefinition)
+    Restricts which variable changes trigger a conditional event.
+  -->
+  <xs:element name="conditionalFilter">
+    <xs:annotation>
+      <xs:documentation>
+        Filters which variable updates trigger a conditional event.
+        Allowed inside extension elements of bpmn:ConditionalEventDefinition.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="variableNames"  type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>Comma-separated list of variable names that may trigger the event.</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="variableEvents" type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>Comma-separated event types: "create", "update", "delete".</xs:documentation></xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ================================================================
+       17.  MODELER TEMPLATE ATTRIBUTES (abstract — applied via xs:anyAttribute in tools)
+       These are declared as global attributes so validators can reference them.
+  ================================================================ -->
+
+  <xs:attribute name="modelerTemplate"        type="xs:string"/>
+  <xs:attribute name="modelerTemplateVersion" type="xs:integer"/>
+  <xs:attribute name="modelerTemplateIcon"    type="xs:string"/>
+
+</xs:schema>

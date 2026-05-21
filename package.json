@@ -1,0 +1,37 @@
+{
+  "name": "zenbpm-bpmn-moddle",
+  "version": "1.0.0",
+  "description": "Custom BPMN 2.0 extension namespace — myext (derived from Zeebe/Camunda Platform 8)",
+  "main": "resources/zenbpm.json",
+  "scripts": {
+    "all": "run-s lint test",
+    "lint": "eslint .",
+    "test": "mocha --reporter=spec --recursive test",
+    "validate-xsd": "node test/validate-xsd.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pbinitiative/zenbpm-bpmn-moddle"
+  },
+  "keywords": [
+    "bpmn",
+    "moddle",
+    "bpmn20",
+    "myext",
+    "meta-model",
+    "extension"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "bpmn-moddle": "^10.0.0",
+    "chai": "^5.0.0",
+    "eslint": "^9.0.0",
+    "mocha": "^11.0.0",
+    "npm-run-all": "^4.1.5",
+    "xsd-schema-validator": "^0.11.0"
+  },
+  "files": [
+    "resources",
+    "xsd"
+  ]
+}
