@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   BPMN Extension Schema — zenbpm namespace
-  URI:    http://example.org/schema/zenbpm/1.0
+  URI:    http://zenbpm.pbinitiative.org/1.0
   Prefix: zenbpm
 
   This XSD is the authoritative machine-readable specification of the
@@ -15,8 +15,8 @@
 -->
 <xs:schema
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:zenbpm="http://example.org/schema/zenbpm/1.0"
-  targetNamespace="http://example.org/schema/zenbpm/1.0"
+  xmlns:zenbpm="http://zenbpm.pbinitiative.org/1.0"
+  targetNamespace="http://zenbpm.pbinitiative.org/1.0"
   elementFormDefault="qualified"
   attributeFormDefault="unqualified">
 

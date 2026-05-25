@@ -40,7 +40,7 @@
 
   <!-- zenbpm extension namespace (all zenbpm:* extension elements) -->
   <xs:import
-    namespace  ="http://example.org/schema/zenbpm/1.0"
+    namespace  ="http://zenbpm.pbinitiative.org/1.0"
     schemaLocation="zenbpm.xsd"/>
 
 </xs:schema>

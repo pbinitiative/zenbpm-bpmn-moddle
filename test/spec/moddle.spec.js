@@ -11,7 +11,7 @@ const { expect }  = require('chai');
 const { BpmnModdle } = require('bpmn-moddle');
 const zenbpmModdle = require('../../resources/zenbpm.json');
 
-const NAMESPACE = 'http://example.org/schema/zenbpm/1.0';
+const NAMESPACE = 'http://zenbpm.pbinitiative.org/1.0';
 const PREFIX    = 'zenbpm';
 
 describe('zenbpm moddle descriptor', function() {

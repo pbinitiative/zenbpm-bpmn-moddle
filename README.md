@@ -13,7 +13,7 @@ re-namespaced as a standalone public specification.
 | Property | Value |
 |---|---|
 | **Prefix** | `zenbpm` |
-| **URI** | `http://zenbpm.pbinitiative.org/schema/1.0` |
+| **URI** | `http://zenbpm.pbinitiative.org/1.0` |
 | **XSD** | `xsd/zenbpm.xsd` |
 | **Moddle descriptor** | `resources/zenbpm.json` |
 
@@ -26,9 +26,10 @@ re-namespaced as a standalone public specification.
 ```xml
 <bpmn:definitions
   xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
-  xmlns:zenbpm="http://zenbpm.pbinitiative.org/schema/1.0"
+  xmlns:zenbpm="http://zenbpm.pbinitiative.org/1.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://zenbpm.pbinitiative.org/schema/zenbpm/1.0"
+  xsi:schemaLocation="http://zenbpm.pbinitiative.org/1.0
+                      https://zenbpm.pbinitiative.org/1.0/zenbpm.xsd"
   targetNamespace="http://zenbpm.pbinitiative.org"
   id="Definitions_1">
   ...

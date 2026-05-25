@@ -1,7 +1,7 @@
 {
   "name": "zenbpm",
   "prefix": "zenbpm",
-  "uri": "http://example.org/schema/zenbpm/1.0",
+  "uri": "http://zenbpm.pbinitiative.org/1.0",
   "xml": {
     "tagAlias": "lowerCase"
   },

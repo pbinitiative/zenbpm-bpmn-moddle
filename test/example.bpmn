@@ -11,9 +11,9 @@
 -->
 <bpmn:definitions
   xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
-  xmlns:zenbpm="http://example.org/schema/zenbpm/1.0"
+  xmlns:zenbpm="http://zenbpm.pbinitiative.org/1.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://example.org/schema/zenbpm/1.0
+  xsi:schemaLocation="http://zenbpm.pbinitiative.org/1.0
                       ../xsd/zenbpm.xsd"
   targetNamespace="http://example.org/bpmn"
   id="Definitions_example">
