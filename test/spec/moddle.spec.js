@@ -160,8 +160,8 @@ describe('zenbpm moddle descriptor', function() {
   // ── FormDefinition ────────────────────────────────────────────
   describe('zenbpm:FormDefinition', function() {
     it('creates with formKey', function() {
-      const fd = moddle.create('zenbpm:FormDefinition', { formKey: 'camunda-forms:Form_abc' });
-      expect(fd.formKey).to.equal('camunda-forms:Form_abc');
+      const fd = moddle.create('zenbpm:FormDefinition', { formKey: 'Form_abc' });
+      expect(fd.formKey).to.equal('Form_abc');
     });
     it('creates with formId', function() {
       const fd = moddle.create('zenbpm:FormDefinition', { formId: 'Form_orderDetails' });

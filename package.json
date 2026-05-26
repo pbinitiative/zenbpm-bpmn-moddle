@@ -1,7 +1,7 @@
 {
   "name": "zenbpm-bpmn-moddle",
-  "version": "1.0.0",
-  "description": "Custom BPMN 2.0 extension namespace — zenbpm (derived from Zeebe/Camunda Platform 8)",
+  "version": "0.1.0",
+  "description": "Custom BPMN 2.0 extension namespace — zenbpm (derived from Zeebe/Camunda",
   "main": "resources/zenbpm.json",
   "scripts": {
     "all": "run-s lint test",
@@ -17,11 +17,20 @@
     "bpmn",
     "moddle",
     "bpmn20",
-    "myext",
+    "zenbpm",
     "meta-model",
     "extension"
   ],
   "license": "MIT",
+  "engines": {
+    "node": ">=14"
+  },
+  "exports": {
+    ".": "./resources/zenbpm.json"
+  },
+  "peerDependencies": {
+    "bpmn-moddle": ">=7"
+  },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
     "bpmn-moddle": "^10.0.0",

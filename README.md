@@ -58,7 +58,7 @@ re-namespaced as a standalone public specification.
 |---|---|---|
 | `zenbpm:taskDefinition` | Service/Script/Business-rule/Send tasks, End/Intermediate events, AdHocSubProcess | Job type + retry count |
 | `zenbpm:ioMapping` | Service tasks, Call activities, Receive tasks, SubProcesses, UserTasks, Events | Input/output variable mapping |
-| `zenbpm:taskHeaders` | Service tasks, Execution listeners | Static key/value headers for the job worker |
+| `zenbpm:taskHeaders` | Service tasks, UserTask, Execution listeners | Static key/value headers for the job worker |
 | `zenbpm:subscription` | Receive tasks, Message events | Correlation key for message subscriptions |
 | `zenbpm:loopCharacteristics` | `bpmn:MultiInstanceLoopCharacteristics` | Collection expressions for multi-instance loops |
 | `zenbpm:calledElement` | `bpmn:CallActivity` | Target process ID, propagation flags, binding type |
@@ -77,6 +77,43 @@ re-namespaced as a standalone public specification.
 | `zenbpm:linkedResources` | `bpmn:ServiceTask` | External resource references (OpenAPI, etc.) |
 | `zenbpm:adHoc` | `bpmn:AdHocSubProcess` | Active-elements collection + output collection |
 | `zenbpm:conditionalFilter` | `bpmn:ConditionalEventDefinition` | Variable-name / event-type filter |
+| `zenbpm:zenForm` | `bpmn:UserTask` | ZenBPM-native form reference by `formId` |
+
+---
+
+## Modeler Attribute Injectors
+
+These are **abstract types** — they do not appear as child elements inside `<bpmn:extensionElements>` but instead inject XML attributes directly onto standard BPMN elements. They are primarily used by BPMN modelers to track element templates.
+
+### `TemplateSupported`
+
+Injects modeler-template tracking attributes onto:
+`bpmn:Collaboration`, `bpmn:Process`, `bpmn:FlowElement` (and all its subtypes — tasks, events, gateways, etc.)
+
+| Attribute | Type | Purpose |
+|---|---|---|
+| `zenbpm:modelerTemplate` | `String` | ID of the element template applied by the modeler |
+| `zenbpm:modelerTemplateVersion` | `Integer` | Version of the applied template |
+| `zenbpm:modelerTemplateIcon` | `String` | Icon override for the element in the modeler |
+
+**Example:**
+```xml
+<bpmn:serviceTask id="Task_1" zenbpm:modelerTemplate="my-template" zenbpm:modelerTemplateVersion="3" />
+```
+
+### `TemplatedRootElement`
+
+Injects a modeler-template reference onto root-level BPMN elements:
+`bpmn:Error`, `bpmn:Escalation`, `bpmn:Message`, `bpmn:Signal`
+
+| Attribute | Type | Purpose |
+|---|---|---|
+| `zenbpm:modelerTemplate` | `String` | ID of the element template that created this root element |
+
+**Example:**
+```xml
+<bpmn:message id="Msg_1" name="OrderReceived" zenbpm:modelerTemplate="order-template" />
+```
 
 ---
 

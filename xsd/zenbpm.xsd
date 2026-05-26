@@ -9,9 +9,6 @@
     - XML validators (e.g. xsd-schema-validator in the test suite)
     - IDEs for auto-complete inside .bpmn files
     - Any tool that needs to verify extension-element content
-
-  Derive from Zeebe's extension schema (http://camunda.org/schema/zeebe/1.0)
-  but fully independent: no runtime dependency on Camunda/Zeebe.
 -->
 <xs:schema
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
@@ -282,7 +279,7 @@
   <!--
     userTask  (allowedIn: bpmn:UserTask)
     Marker element — presence indicates the task is managed by the engine's
-    user-task lifecycle (Camunda 8 "Zeebe user task").
+    user-task lifecycle.
   -->
   <xs:element name="userTask">
     <xs:annotation>
