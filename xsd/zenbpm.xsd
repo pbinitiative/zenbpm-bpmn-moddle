@@ -72,6 +72,9 @@
       <xs:attribute name="retries" type="xs:string" use="optional">
         <xs:annotation><xs:documentation>Number of retries (expression or literal integer as string).</xs:documentation></xs:annotation>
       </xs:attribute>
+      <xs:attribute name="retryCounter" type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>The retry counter property for Service Task.</xs:documentation></xs:annotation>
+      </xs:attribute>
     </xs:complexType>
   </xs:element>
 
@@ -616,6 +619,26 @@
        17.  MODELER TEMPLATE ATTRIBUTES (abstract — applied via xs:anyAttribute in tools)
        These are declared as global attributes so validators can reference them.
   ================================================================ -->
+
+  <!-- ================================================================
+       18.  ZEN FORM
+  ================================================================ -->
+
+  <!--
+    zenForm  (allowedIn: bpmn:UserTask)
+    Configuration for zenForm.
+  -->
+  <xs:element name="zenForm">
+    <xs:annotation>
+      <xs:documentation>
+        Zen form configuration.
+        Allowed inside extension elements of bpmn:UserTask.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="formId" type="xs:string" use="optional"/>
+    </xs:complexType>
+  </xs:element>
 
   <xs:attribute name="modelerTemplate"        type="xs:string"/>
   <xs:attribute name="modelerTemplateVersion" type="xs:integer"/>

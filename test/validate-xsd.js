@@ -1,7 +1,7 @@
 /**
  * validate-xsd.js
  *
- * Validates test/example.bpmn against xsd/myext.xsd using xsd-schema-validator.
+ * Validates test/example.bpmn against xsd/zenbpm.xsd using xsd-schema-validator.
  * Run with:  node test/validate-xsd.js
  */
 

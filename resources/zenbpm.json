@@ -356,7 +356,13 @@
           "bpmn:UserTask"
         ]
       },
-      "properties": []
+      "properties": [
+        {
+          "name": "retryCounter",
+          "type": "String",
+          "isAttr": true
+        }
+      ]
     },
     {
       "name": "CalledDecision",
@@ -712,6 +718,24 @@
           "name": "outputElement",
           "isAttr": true,
           "type": "String"
+        }
+      ]
+    },
+    {
+      "name": "ZenForm",
+      "superClass": [
+        "Element"
+      ],
+      "meta": {
+        "allowedIn": [
+          "bpmn:UserTask"
+        ]
+      },
+      "properties": [
+        {
+          "name": "formId",
+          "type": "String",
+          "isAttr": true
         }
       ]
     },

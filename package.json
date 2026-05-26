@@ -23,9 +23,11 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "@eslint/js": "^9.39.4",
     "bpmn-moddle": "^10.0.0",
     "chai": "^5.0.0",
     "eslint": "^9.0.0",
+    "globals": "^17.6.0",
     "mocha": "^11.0.0",
     "npm-run-all": "^4.1.5",
     "xsd-schema-validator": "^0.11.0"
@@ -33,6 +35,5 @@
   "files": [
     "resources",
     "xsd"
-  ],
-  "dependencies": {}
+  ]
 }

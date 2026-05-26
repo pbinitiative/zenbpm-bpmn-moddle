@@ -236,6 +236,16 @@ describe('zenbpm moddle descriptor', function() {
     });
   });
 
+  // ── ZenForm ───────────────────────────────────────────────────
+  describe('zenbpm:ZenForm', function() {
+    it('creates with formId', function() {
+      const zf = moddle.create('zenbpm:ZenForm', {
+        formId: 'Form_myCustomZenForm'
+      });
+      expect(zf.formId).to.equal('Form_myCustomZenForm');
+    });
+  });
+
   // ── ConditionalFilter ─────────────────────────────────────────
   describe('zenbpm:ConditionalFilter', function() {
     it('creates with variableNames and variableEvents', function() {

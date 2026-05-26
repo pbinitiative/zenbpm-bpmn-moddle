@@ -22,12 +22,12 @@
   <!-- BPMN 2.0 core (declares bpmn:definitions, all tasks, events, …) -->
   <xs:import
     namespace  ="http://www.omg.org/spec/BPMN/20100524/MODEL"
-    schemaLocation="BPMN20.xsd"/>
+    schemaLocation="../node_modules/bpmn-moddle/resources/bpmn/xsd/BPMN20.xsd"/>
 
   <!-- BPMN DI (BPMNDiagram, BPMNShape, BPMNEdge, …) -->
   <xs:import
     namespace  ="http://www.omg.org/spec/BPMN/20100524/DI"
-    schemaLocation="BPMNDI.xsd"/>
+    schemaLocation="../node_modules/bpmn-moddle/resources/bpmn/xsd/BPMNDI.xsd"/>
 
   <!-- Draw-Coordinates (DC) and Draw-Interface (DI) support schemas -->
   <xs:import
