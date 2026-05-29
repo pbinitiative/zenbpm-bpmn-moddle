@@ -1,6 +1,6 @@
 {
   "name": "@pbinitiative/zenbpm-bpmn-moddle",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Custom BPMN 2.0 extension namespace — zenbpm (derived from Zeebe/Camunda",
   "main": "resources/zenbpm.json",
   "scripts": {
