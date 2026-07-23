@@ -90,6 +90,40 @@ describe('zenbpm moddle descriptor', function() {
     });
   });
 
+  // ── In ────────────────────────────────────────────────────────
+  describe('zenbpm:In', function() {
+    it('creates with a business key expression', function() {
+      const input = moddle.create('zenbpm:In', {
+        businessKey: '=processBusinessKey'
+      });
+      expect(input.businessKey).to.equal('=processBusinessKey');
+    });
+
+    it('round-trips an empty business key override', async function() {
+      const source = `<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:zenbpm="${NAMESPACE}"
+                  targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_1">
+    <bpmn:callActivity id="CallActivity_1">
+      <bpmn:extensionElements>
+        <zenbpm:in businessKey="" />
+      </bpmn:extensionElements>
+    </bpmn:callActivity>
+  </bpmn:process>
+</bpmn:definitions>`;
+
+      const { rootElement } = await moddle.fromXML(source);
+      const input = rootElement.rootElements[0].flowElements[0].extensionElements.values[0];
+      expect(input.$type).to.equal('zenbpm:In');
+      expect(input.businessKey).to.equal('');
+
+      const { xml } = await moddle.toXML(rootElement);
+      expect(xml).to.include('<bpmn:extensionElements>');
+      expect(xml).to.include('<zenbpm:in businessKey="" />');
+    });
+  });
+
   // ── CalledElement ─────────────────────────────────────────────
   describe('zenbpm:CalledElement', function() {
     it('creates with processId and propagation flags', function() {

@@ -59,6 +59,25 @@
       }
     },
     {
+      "name": "In",
+      "superClass": [
+        "Element"
+      ],
+      "meta": {
+        "allowedIn": [
+          "bpmn:CallActivity",
+          "bpmn:SubProcess"
+        ]
+      },
+      "properties": [
+        {
+          "name": "businessKey",
+          "type": "String",
+          "isAttr": true
+        }
+      ]
+    },
+    {
       "name": "InputOutputParameter",
       "properties": [
         {

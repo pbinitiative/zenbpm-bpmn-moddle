@@ -111,6 +111,7 @@
           propagateAllParentVariables="true"
           bindingType                ="versionTag"
           versionTag                 ="v2"/>
+        <zenbpm:in businessKey="=orderId"/>
         <zenbpm:ioMapping>
           <zenbpm:input  source="=orderId"      target="fulfillmentOrderId"/>
           <zenbpm:output source="=trackingCode" target="shipmentTracking"/>

@@ -58,6 +58,7 @@ re-namespaced as a standalone public specification.
 |---|---|---|
 | `zenbpm:taskDefinition` | Service/Script/Business-rule/Send tasks, End/Intermediate events, AdHocSubProcess | Job type + retry count |
 | `zenbpm:ioMapping` | Service tasks, Call activities, Receive tasks, SubProcesses, UserTasks, Events | Input/output variable mapping |
+| `zenbpm:in` | Call activities, SubProcesses | FEEL business-key override for the child process instance |
 | `zenbpm:taskHeaders` | Service tasks, UserTask, Execution listeners | Static key/value headers for the job worker |
 | `zenbpm:subscription` | Receive tasks, Message events | Correlation key for message subscriptions |
 | `zenbpm:loopCharacteristics` | `bpmn:MultiInstanceLoopCharacteristics` | Collection expressions for multi-instance loops |
