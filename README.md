@@ -58,7 +58,7 @@ re-namespaced as a standalone public specification.
 |---|---|---|
 | `zenbpm:taskDefinition` | Service/Script/Business-rule/Send tasks, End/Intermediate events, AdHocSubProcess | Job type + retry count |
 | `zenbpm:ioMapping` | Service tasks, Call activities, Receive tasks, SubProcesses, UserTasks, Events | Input/output variable mapping |
-| `zenbpm:in` | Call activities, SubProcesses | FEEL business-key override for the child process instance |
+| `zenbpm:in` | Call activities, SubProcesses | Child business-key inheritance, clearing, or FEEL evaluation |
 | `zenbpm:taskHeaders` | Service tasks, UserTask, Execution listeners | Static key/value headers for the job worker |
 | `zenbpm:subscription` | Receive tasks, Message events | Correlation key for message subscriptions |
 | `zenbpm:loopCharacteristics` | `bpmn:MultiInstanceLoopCharacteristics` | Collection expressions for multi-instance loops |
@@ -79,6 +79,30 @@ re-namespaced as a standalone public specification.
 | `zenbpm:adHoc` | `bpmn:AdHocSubProcess` | Active-elements collection + output collection |
 | `zenbpm:conditionalFilter` | `bpmn:ConditionalEventDefinition` | Variable-name / event-type filter |
 | `zenbpm:zenForm` | `bpmn:UserTask` | ZenBPM-native form reference by `formId` |
+
+### Business-key syntax (`zenbpm:in`)
+
+| `businessKey` form | Runtime meaning |
+|---|---|
+| Attribute omitted (`<zenbpm:in/>`) | Inherit the parent business key |
+| Empty (`businessKey=""`) | Clear the child business key |
+| Non-empty, starts with `=` | Evaluate as FEEL; the expression must be valid and return a string, for example `=processBusinessKey` |
+| Any other non-empty value | Create an engine incident because the required `=` prefix is missing |
+
+FEEL is the only supported non-empty syntax. An invalid FEEL expression, a FEEL
+evaluation error, or a result that is nil/undefined or not a string creates an
+engine incident. The moddle stores and serializes the optional string unchanged.
+The XSD permits an unrestricted optional string and intentionally does not enforce
+runtime FEEL rules, so the engine can create incidents.
+
+A static key is also a FEEL string expression. Escape its quotes inside the XML
+attribute:
+
+```xml
+<bpmn:extensionElements>
+  <zenbpm:in businessKey="=&quot;fixed-key&quot;"/>
+</bpmn:extensionElements>
+```
 
 ---
 

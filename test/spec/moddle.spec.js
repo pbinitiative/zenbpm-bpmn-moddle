@@ -92,14 +92,8 @@ describe('zenbpm moddle descriptor', function() {
 
   // ── In ────────────────────────────────────────────────────────
   describe('zenbpm:In', function() {
-    it('creates with a business key expression', function() {
-      const input = moddle.create('zenbpm:In', {
-        businessKey: '=processBusinessKey'
-      });
-      expect(input.businessKey).to.equal('=processBusinessKey');
-    });
 
-    it('round-trips an empty business key override', async function() {
+    async function roundTrip(inElement) {
       const source = `<?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
                   xmlns:zenbpm="${NAMESPACE}"
@@ -107,7 +101,7 @@ describe('zenbpm moddle descriptor', function() {
   <bpmn:process id="Process_1">
     <bpmn:callActivity id="CallActivity_1">
       <bpmn:extensionElements>
-        <zenbpm:in businessKey="" />
+        ${inElement}
       </bpmn:extensionElements>
     </bpmn:callActivity>
   </bpmn:process>
@@ -115,12 +109,44 @@ describe('zenbpm moddle descriptor', function() {
 
       const { rootElement } = await moddle.fromXML(source);
       const input = rootElement.rootElements[0].flowElements[0].extensionElements.values[0];
+      const { xml } = await moddle.toXML(rootElement);
+
+      return { input, xml };
+    }
+
+    it('creates with a FEEL business key expression string', function() {
+      const input = moddle.create('zenbpm:In', {
+        businessKey: '=processBusinessKey'
+      });
+      expect(input.businessKey).to.equal('=processBusinessKey');
+    });
+
+    // Characterization tests for existing XML transport behavior; these may
+    // pass immediately without a production-code RED phase.
+    it('round-trips an omitted business key without adding the attribute', async function() {
+      const { input, xml } = await roundTrip('<zenbpm:in/>');
+
+      expect(input.$type).to.equal('zenbpm:In');
+      expect(input.businessKey).to.be.undefined;
+      expect(xml).to.include('<zenbpm:in />');
+      expect(xml).not.to.match(/<zenbpm:in[^>]*\sbusinessKey=/);
+    });
+
+    it('round-trips an empty business key override distinctly', async function() {
+      const { input, xml } = await roundTrip('<zenbpm:in businessKey="" />');
+
       expect(input.$type).to.equal('zenbpm:In');
       expect(input.businessKey).to.equal('');
-
-      const { xml } = await moddle.toXML(rootElement);
-      expect(xml).to.include('<bpmn:extensionElements>');
       expect(xml).to.include('<zenbpm:in businessKey="" />');
+    });
+
+    it('round-trips a FEEL business key string unchanged', async function() {
+      const { input, xml } = await roundTrip(
+        '<zenbpm:in businessKey="=processBusinessKey" />'
+      );
+
+      expect(input.businessKey).to.equal('=processBusinessKey');
+      expect(xml).to.include('<zenbpm:in businessKey="=processBusinessKey" />');
     });
   });
 

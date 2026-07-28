@@ -131,15 +131,22 @@
 
   <!--
     in  (allowedIn: bpmn:CallActivity, bpmn:SubProcess)
-    Overrides the business key inherited by a child process instance.
-    The element intentionally follows Camunda 7's camunda:in businessKey
-    XML shape while using a FEEL expression.
+    Configures the child business key for a Call Activity or SubProcess.
+    An omitted businessKey inherits the parent business key; an explicit empty
+    value clears it. A non-empty value must begin with "=" and be valid FEEL that
+    evaluates to a string. A missing prefix, FEEL error, nil/undefined result, or
+    non-string result creates an engine incident. The optional xs:string remains
+    unrestricted so malformed runtime values can load and create incidents.
   -->
   <xs:element name="in">
     <xs:annotation>
       <xs:documentation>
-        Overrides the inherited business key for a Call Activity or SubProcess.
-        The businessKey value is evaluated as FEEL; an empty value clears it.
+        Configures the child business key for a Call Activity or SubProcess.
+        An omitted businessKey inherits the parent business key; an explicit empty
+        value clears it. A non-empty value must begin with "=" and be valid FEEL that
+        evaluates to a string. A missing prefix, FEEL error, nil/undefined result, or
+        non-string result creates an engine incident. The optional xs:string remains
+        unrestricted so malformed runtime values can load and create incidents.
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
