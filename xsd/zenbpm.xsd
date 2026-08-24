@@ -49,17 +49,17 @@
   ================================================================ -->
 
   <!--
-    taskDefinition  (allowedIn: zenbpm:ServiceTask → effectively bpmn:ServiceTask etc.)
-    Declares the job type and retry count for a service-task worker.
+    taskDefinition  (allowedIn: zenbpm:ServiceTask and bpmn:UserTask)
+    Declares the job type and, for worker tasks, the retry count.
   -->
   <xs:element name="taskDefinition">
     <xs:annotation>
       <xs:documentation>
-        Defines the job type and retry policy for a service task.
-        Allowed inside extension elements of:
+        Defines the job type and retry policy for worker tasks, and the job type
+        for User Tasks. Allowed inside extension elements of:
           bpmn:ServiceTask, bpmn:BusinessRuleTask, bpmn:ScriptTask,
-          bpmn:SendTask, bpmn:EndEvent, bpmn:IntermediateThrowEvent,
-          bpmn:AdHocSubProcess.
+          bpmn:SendTask, bpmn:UserTask, bpmn:EndEvent,
+          bpmn:IntermediateThrowEvent, bpmn:AdHocSubProcess.
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>

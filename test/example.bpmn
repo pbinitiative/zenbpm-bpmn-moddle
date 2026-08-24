@@ -80,6 +80,7 @@
     <bpmn:userTask id="Task_userReview" name="Review Order">
       <bpmn:extensionElements>
         <zenbpm:userTask/>
+        <zenbpm:taskDefinition type="approval"/>
         <zenbpm:formDefinition formId="Form_orderDetails" bindingType="latest"/>
         <zenbpm:assignmentDefinition
           assignee="=currentUser"

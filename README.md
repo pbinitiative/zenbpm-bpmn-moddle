@@ -56,7 +56,7 @@ re-namespaced as a standalone public specification.
 
 | Element | Allowed in | Purpose |
 |---|---|---|
-| `zenbpm:taskDefinition` | Service/Script/Business-rule/Send tasks, End/Intermediate events, AdHocSubProcess | Job type + retry count |
+| `zenbpm:taskDefinition` | Service/Script/Business-rule/Send/User tasks, End/Intermediate events, AdHocSubProcess | Job type; retry count on worker tasks |
 | `zenbpm:ioMapping` | Service tasks, Call activities, Receive tasks, SubProcesses, UserTasks, Events | Input/output variable mapping |
 | `zenbpm:in` | Call activities, SubProcesses | Child business-key inheritance, clearing, or FEEL evaluation |
 | `zenbpm:taskHeaders` | Service tasks, UserTask, Execution listeners | Static key/value headers for the job worker |
