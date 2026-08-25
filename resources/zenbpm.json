@@ -185,7 +185,8 @@
       ],
       "meta": {
         "allowedIn": [
-          "zenbpm:ServiceTask"
+          "zenbpm:ServiceTask",
+          "bpmn:UserTask"
         ]
       },
       "properties": [

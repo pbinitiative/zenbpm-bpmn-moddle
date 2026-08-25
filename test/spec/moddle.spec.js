@@ -42,6 +42,36 @@ describe('zenbpm moddle descriptor', function() {
       expect(td.type).to.equal('payment-worker');
       expect(td.retries).to.equal('3');
     });
+
+    it('is allowed in BPMN User Tasks', function() {
+      const descriptor = zenbpmModdle.types.find(({ name }) => name === 'TaskDefinition');
+
+      expect(descriptor.meta.allowedIn).to.include('bpmn:UserTask');
+    });
+
+    it('round-trips a configured BPMN User Task', async function() {
+      const source = `<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:zenbpm="${NAMESPACE}"
+                  targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_1">
+    <bpmn:userTask id="approve-order">
+      <bpmn:extensionElements>
+        <zenbpm:taskDefinition type="approval" />
+      </bpmn:extensionElements>
+    </bpmn:userTask>
+  </bpmn:process>
+</bpmn:definitions>`;
+
+      const { rootElement } = await moddle.fromXML(source);
+      const userTask = rootElement.rootElements[0].flowElements[0];
+      const taskDefinition = userTask.extensionElements.values[0];
+      const { xml } = await moddle.toXML(rootElement);
+
+      expect(taskDefinition.$type).to.equal('zenbpm:TaskDefinition');
+      expect(taskDefinition.type).to.equal('approval');
+      expect(xml).to.include('<zenbpm:taskDefinition type="approval" />');
+    });
   });
 
   // ── IoMapping ─────────────────────────────────────────────────
