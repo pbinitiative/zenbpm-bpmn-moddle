@@ -62,7 +62,7 @@ re-namespaced as a standalone public specification.
 | `zenbpm:taskHeaders` | Service tasks, UserTask, Execution listeners | Static key/value headers for the job worker |
 | `zenbpm:subscription` | Receive tasks, Message events | Correlation key for message subscriptions |
 | `zenbpm:loopCharacteristics` | `bpmn:MultiInstanceLoopCharacteristics` | Collection expressions for multi-instance loops |
-| `zenbpm:calledElement` | `bpmn:CallActivity` | Target process ID, propagation flags, binding type |
+| `zenbpm:calledElement` | `bpmn:CallActivity` | Target process ID and binding type |
 | `zenbpm:calledDecision` | `bpmn:BusinessRuleTask` | DMN decision ID, result variable, binding type |
 | `zenbpm:script` | `bpmn:ScriptTask` | Inline FEEL expression + result variable |
 | `zenbpm:userTask` | `bpmn:UserTask` | Marker for engine-managed user-task lifecycle |

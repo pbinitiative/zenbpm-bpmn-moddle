@@ -214,12 +214,12 @@
 
   <!--
     calledElement  (allowedIn: bpmn:CallActivity)
-    Specifies which process to invoke and variable propagation rules.
+    Specifies which process to invoke and its version binding.
   -->
   <xs:element name="calledElement">
     <xs:annotation>
       <xs:documentation>
-        Configures the called process and variable-propagation policy for a call activity.
+        Configures the called process and its version binding for a call activity.
         Allowed inside extension elements of bpmn:CallActivity.
       </xs:documentation>
     </xs:annotation>
@@ -230,14 +230,8 @@
       <xs:attribute name="processIdExpression"         type="xs:string"  use="optional">
         <xs:annotation><xs:documentation>FEEL expression that evaluates to the called process ID.</xs:documentation></xs:annotation>
       </xs:attribute>
-      <xs:attribute name="propagateAllChildVariables"  type="xs:boolean" use="optional">
-        <xs:annotation><xs:documentation>If true, all child-process variables are propagated back to the parent on completion.</xs:documentation></xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="propagateAllParentVariables" type="xs:boolean" use="optional" default="true">
-        <xs:annotation><xs:documentation>If true (default), all parent-process variables are available in the called process.</xs:documentation></xs:annotation>
-      </xs:attribute>
       <xs:attribute name="bindingType" type="xs:string" use="optional" default="latest">
-        <xs:annotation><xs:documentation>Version binding strategy: "latest", "deployment", or "versionTag".</xs:documentation></xs:annotation>
+        <xs:annotation><xs:documentation>Version binding strategy: "latest" or "versionTag".</xs:documentation></xs:annotation>
       </xs:attribute>
       <xs:attribute name="versionTag"  type="xs:string" use="optional">
         <xs:annotation><xs:documentation>The version tag to bind to when bindingType="versionTag".</xs:documentation></xs:annotation>

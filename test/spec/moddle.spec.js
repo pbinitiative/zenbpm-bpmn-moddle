@@ -182,14 +182,11 @@ describe('zenbpm moddle descriptor', function() {
 
   // ── CalledElement ─────────────────────────────────────────────
   describe('zenbpm:CalledElement', function() {
-    it('creates with processId and propagation flags', function() {
+    it('creates with processId', function() {
       const ce = moddle.create('zenbpm:CalledElement', {
-        processId:                   'sub-process',
-        propagateAllChildVariables:  true,
-        propagateAllParentVariables: true
+        processId: 'sub-process'
       });
       expect(ce.processId).to.equal('sub-process');
-      expect(ce.propagateAllChildVariables).to.be.true;
     });
   });
 
