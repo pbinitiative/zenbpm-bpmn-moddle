@@ -255,17 +255,6 @@
           "name": "processIdExpression",
           "type": "String",
           "isAttr": true
-        },
-        {
-          "name": "propagateAllChildVariables",
-          "isAttr": true,
-          "type": "Boolean"
-        },
-        {
-          "name": "propagateAllParentVariables",
-          "isAttr": true,
-          "type": "Boolean",
-          "default": true
         }
       ]
     },

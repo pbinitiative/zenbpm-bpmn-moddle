@@ -4,7 +4,7 @@
   "description": "Custom BPMN 2.0 extension namespace — zenbpm (derived from Zeebe/Camunda",
   "main": "resources/zenbpm.json",
   "scripts": {
-    "all": "run-s lint test",
+    "all": "run-s lint test validate-xsd",
     "lint": "eslint .",
     "test": "mocha --reporter=spec --recursive test",
     "validate-xsd": "node test/validate-xsd.js"

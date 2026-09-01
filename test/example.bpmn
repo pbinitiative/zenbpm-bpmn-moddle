@@ -103,15 +103,13 @@
 
     <bpmn:sequenceFlow id="Flow_3" sourceRef="Task_userReview" targetRef="Task_callSubProcess"/>
 
-    <!-- ── Call Activity: calledElement with propagation rules ── -->
+    <!-- ── Call Activity: calledElement with process binding ── -->
     <bpmn:callActivity id="Task_callSubProcess" name="Run Fulfillment">
       <bpmn:extensionElements>
         <zenbpm:calledElement
-          processId                  ="fulfillment-process"
-          propagateAllChildVariables ="true"
-          propagateAllParentVariables="true"
-          bindingType                ="versionTag"
-          versionTag                 ="v2"/>
+          processId   ="fulfillment-process"
+          bindingType ="versionTag"
+          versionTag  ="v2"/>
         <zenbpm:in businessKey="=orderId"/>
         <zenbpm:ioMapping>
           <zenbpm:input  source="=orderId"      target="fulfillmentOrderId"/>
